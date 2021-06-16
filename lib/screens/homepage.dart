@@ -5,15 +5,10 @@ import 'package:http/http.dart' as http;
 
 const String BASE_URL = "https://newsapi.org/v2/";
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class HomePage extends StatelessWidget {
   List<Article> articles = [];
 
-  void getArticles() async {
+  Future<void> getArticles() async {
     final url = Uri.parse(BASE_URL +
         "top-headlines?country=in&apiKey=c28a2ae746814b82995771ad144d96a4");
     final response = await http.get(url);
@@ -29,47 +24,67 @@ class _HomePageState extends State<HomePage> {
         // print(article);
         articles.add(article);
       }
-      setState(() {});
+      // setState(() {});
       print("Done fetching the articles");
     } else {
       print("Could not fetch articles");
     }
   }
 
+  final Future<String> _calculation = Future<String>.delayed(
+    const Duration(seconds: 2),
+    () => 'Data Loaded',
+  );
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              getArticles();
-            },
-          ),
-          body: Container(
-            // Main container wrapping the listview
-            color: Colors.amber,
-            width: double.infinity,
-            height: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: articles.length == 0
-                  ? Text("No articles found")
+          body: FutureBuilder(
+              future: getArticles(),
+              // future: _calculation,
+              builder: (context, snapshot) {
+                // If we are still fetching the articles
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                // If we are done fetching the articles
+                else if (snapshot.connectionState == ConnectionState.done) {
+                  return Container(
+                    // Main container wrapping the listview
+                    color: Colors.amber,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: articles.length == 0
+                          ? Text("No articles found")
 
-                  // Main list that shows the articles
-                  : ListView.builder(
-                      itemCount: articles.length,
-                      // Method 1
-                      // itemBuilder: (context, index) => NewsArticleWidget(),
+                          // Main list that shows the articles
+                          : ListView.builder(
+                              itemCount: articles.length,
+                              // Method 1
+                              // itemBuilder: (context, index) => NewsArticleWidget(),
 
-                      // Method 2
-                      itemBuilder: (context, index) {
-                        // print("Index: $index");
-                        return NewsArticleWidget(articles[index]);
-                      },
+                              // Method 2
+                              itemBuilder: (context, index) {
+                                // print("Index: $index");
+                                return NewsArticleWidget(articles[index]);
+                              },
+                            ),
                     ),
-            ),
-          ),
+                  );
+                }
+
+                // If all the conditions above fail
+                return Center(
+                    child: FlutterLogo(
+                  size: 100,
+                ));
+              }),
         ));
   }
 }
