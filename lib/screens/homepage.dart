@@ -19,8 +19,18 @@ class HomePage extends StatelessWidget {
       // print("Total articles: ${extData['articles'].length}");
 
       for (var item in extData['articles']) {
-        // Iterating over articles
-        var article = Article.fromJson(item);
+        // // Iterating over articles
+        // var article = Article.fromJson(item);
+
+        Article article = Article(
+            title: item['title'],
+            content: item['content'],
+            description: item['description'],
+            author: item['author'] == null ? "Batman" : item['author'],
+            url: item['url'],
+            urlToImage:
+                item['urlToImage'] == null ? "Batman" : item['urlToImage'],
+            publishedAt: item['publishedAt']);
         // print(article);
         articles.add(article);
       }

@@ -1,5 +1,5 @@
 class Article {
-  late Source source;
+  // late Source source;
   late String author;
   late String title;
   late String description;
@@ -9,7 +9,8 @@ class Article {
   late String content;
 
   Article(
-      {required this.source,
+      {
+      // required this.source,
       required this.author,
       required this.title,
       required this.description,
@@ -20,8 +21,9 @@ class Article {
 
   Article.fromJson(Map<String, dynamic> json) {
     // Converting json to class objects
-    source =
-        (json['source'] != null ? new Source.fromJson(json['source']) : null)!;
+    print("INSIDE FROM JSON: $json");
+    // source =
+    //     (json['source'] != null ? new Source.fromJson(json['source']) : null)!;
     author = json['author'];
     title = json['title'];
     description = json['description'];
@@ -34,9 +36,9 @@ class Article {
   Map<String, dynamic> toJson() {
     // Convert class objects to json
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.source != null) {
-      data['source'] = this.source.toJson();
-    }
+    // if (this.source != null) {
+    //   data['source'] = this.source.toJson();
+    // }
     data['author'] = this.author;
     data['title'] = this.title;
     data['description'] = this.description;
