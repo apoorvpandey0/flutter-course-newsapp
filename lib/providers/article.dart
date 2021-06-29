@@ -1,8 +1,3 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:news_app_course/helpers/urls.dart';
-
 class Article {
   // late Source source;
   late String author;
@@ -71,44 +66,5 @@ class Source {
     data['id'] = this.id;
     data['name'] = this.name;
     return data;
-  }
-}
-
-class ArticlesProvider with ChangeNotifier {
-  List<Article> _articles = [];
-
-  get articles => _articles;
-
-  Future<void> getArticles() async {
-    final url = Uri.parse(BASE_URL +
-        "top-headlines?country=in&apiKey=c28a2ae746814b82995771ad144d96a4");
-    final response = await http.get(url);
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      // print(response.body);
-      final extData = json.decode(response.body);
-      // print("Total results: ${extData['totalResults']}");
-      // print("Total articles: ${extData['articles'].length}");
-
-      for (var item in extData['articles']) {
-        // // Iterating over articles
-        // var article = Article.fromJson(item);
-
-        Article article = Article(
-            title: item['title'],
-            content: item['content'],
-            description: item['description'],
-            author: item['author'] == null ? "Batman" : item['author'],
-            url: item['url'],
-            urlToImage:
-                item['urlToImage'] == null ? "Batman" : item['urlToImage'],
-            publishedAt: item['publishedAt']);
-        // print(article);
-        _articles.add(article);
-      }
-      notifyListeners();
-      print("Done fetching the articles");
-    } else {
-      print("Could not fetch articles");
-    }
   }
 }

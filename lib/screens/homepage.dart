@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:news_app_course/providers/article.dart';
 import 'package:provider/provider.dart';
-import '../providers/article.dart';
+import '../providers/articleProvider.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -13,21 +14,36 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    print("INIT STATE RUNNING");
+
+    Provider.of<ArticlesProvider>(context, listen: false).isLoading = true;
+    // This is a listener of ArticlesProvider class which aslo says...
+    // not to notify it for any changes to the provider data - listen:false
     Provider.of<ArticlesProvider>(context, listen: false).getArticles();
   }
 
   @override
   Widget build(BuildContext context) {
     // This is a listener
-    final artData = Provider.of<ArticlesProvider>(context);
+    final articlesData = Provider.of<ArticlesProvider>(context);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-          body: Text(artData.articles[0]),
+          appBar: AppBar(
+            title: Text("News"),
+          ),
+          body: articlesData.isLoading == true
+              ? Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: articlesData.articles.length,
+                  itemBuilder: (context, index) =>
+                      NewsArticleWidget(articlesData.articles[index]),
+                ),
         ));
   }
 }
 
+// Text(articlesData.articles.length.toString())
 class BannerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
